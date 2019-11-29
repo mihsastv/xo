@@ -1,8 +1,12 @@
 import React from 'react';
+import {connect} from 'react-redux'
 import Board from "./Border";
+import './games.css'
+import '../index.css'
 
 class Game extends React.Component {
-    constructor(props) {
+    //был начальный стейт до подключение Redux
+    /*constructor(props) {
         super(props);
         this.state = {
             history: [{
@@ -11,23 +15,22 @@ class Game extends React.Component {
             stepNumber: 0,
             xIsNext: true
         };
-    }
+    }*/
 
     handleClick(i) {
-        const history = this.state.history.slice(0, this.state.stepNumber + 1);
+        const history = this.props.state.history.slice(0, this.props.state.stepNumber + 1);
         const current = history[history.length - 1];
         const squares = current.squares.slice();
-
         if (calculateWinner(squares) || squares[i]) {
             return;
         }
-        squares[i] = this.state.xIsNext ? 'X' : 'O';
+        squares[i] = this.props.state.xIsNext ? 'X' : 'O';
         this.setState({
             history: history.concat([{
                 squares: squares,
             }]),
             stepNumber: history.length,
-            xIsNext: !this.state.xIsNext,
+            xIsNext: !this.props.state.xIsNext,
         });
     }
 
@@ -39,8 +42,9 @@ class Game extends React.Component {
     }
 
     render() {
-        const history = this.state.history;
-        const current = history[this.state.stepNumber];
+        console.log('APP', this.props)
+        const history = this.props.state.history;
+        const current = history[this.props.state.stepNumber];
         const winner = calculateWinner(current.squares);
 
 
@@ -53,7 +57,7 @@ class Game extends React.Component {
 
                 <li key = {move}>
                     <button onClick={() => this.jumpTo(move)}
-                            className="status"
+                            className="bot1"
                     >{desc}</button>
                 </li>
             );
@@ -63,15 +67,17 @@ class Game extends React.Component {
         if (winner) {
             status = 'Победитель: ' + winner;
         } else {
-            status = 'Следующий игрок: ' + (this.state.xIsNext ? 'X' : 'O');
+            status = 'Следующий игрок: ' + (this.props.state.xIsNext ? 'X' : 'O');
         }
 
         return (
-            <div className="game">
+            <div className="game" style = {{background: '#fc3',
+                textAlign: 'center'}}>
                 <div className="game-board">
                     <Board
                         squares={current.squares}
-                        onClick={(i) => this.handleClick(i)}
+                        // вызов локальной функции при кликеonClick={(i) => this.handleClick(i)}
+                        onClick={(i) => this.props.onHahdleClick(i)}
                     />
                 </div>
                 <div className="game-info">
@@ -101,6 +107,23 @@ function calculateWinner(squares) {
         }
     }
     return null;
+
+}
+//получаем свойства из стайта в компонент
+function mapStateToProps(state) {
+    return{
+        state: state
+    }
 }
 
-export default Game
+//манипуляции со стором
+function mapDispatchToProps(dispatch) {
+    return{
+        onHahdleClick: (number) => dispatch({type: 'HANDELCLICK', payload: number}),
+        onJumpTo: () => dispatch({type: 'JUMPTO'})
+    }
+}
+
+//connect()подключаемся к redux --> возвращает нам новый компнент обернутый в редакс(Game)
+//Порядок передачи функций важно
+export default connect(mapStateToProps, mapDispatchToProps)(Game)

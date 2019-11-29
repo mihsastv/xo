@@ -1,5 +1,6 @@
 import React from 'react';
 import Square from "./Square";
+import '../index.css'
 
 class Board extends React.Component {
     /*constructor(props) {
@@ -30,7 +31,8 @@ class Board extends React.Component {
         }*/
 
         return (
-            <div>
+            <div style = {{background: '#fc3',
+                textAlign: 'center'}}>
                     <div className="board-row">
                     {this.renderSquare(0)}
                     {this.renderSquare(1)}

@@ -1,4 +1,5 @@
 import React from 'react';
+import '../index.css'
 
 /*class Square extends React.Component { //использование в качестве компонента
     /!*constructor(props) { // было при хранении стейта локально
